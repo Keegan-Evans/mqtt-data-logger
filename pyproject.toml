@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,12 +8,10 @@ version = "0.1.0"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.9"
-dependencies = ["sqlalchemy", "paho-mqtt"]
+dependencies = ["sqlalchemy", "paho-mqtt", "pytest"]
 
-
-[project.scripts]
-logged = "mqtt_data_logger.log_data:logged"
-start_session = "mqtt_data_logger.util:start_session" # paramterize to take arbitrary db fp
+[tool.setuptools]
+include-package-data = true
 
 [tool.setuptools.packages.find]
 # All the following settings are optional:
@@ -21,3 +19,11 @@ where = ["."]                         # ["."] by default
 include = ["mqtt_data_logger*"]       # ["*"] by default
 exclude = ["mqtt_data_logger.tests*"] # empty by default
 namespaces = false                    # true by default
+
+[tool.setuptools.package-data]
+tests = ["data/*"]
+
+
+[project.scripts]
+logged = "mqtt_data_logger.log_data:logged"
+start_session = "mqtt_data_logger.util:start_session" # paramterize to take arbitrary db fp
