@@ -25,7 +25,10 @@ def on_message(client, userdata, msg):
 def log_sensor_data(client, userdata, msg):
     """Provides callback for logging sensor_data."""
     global session
-    session = session
+    if "session" not in globals():
+        from mqtt_data_logger.util import start_session
+
+        session = start_session()
 
     topic = msg.topic
     parsed_packet = json.loads(msg.payload.decode("utf-8"))

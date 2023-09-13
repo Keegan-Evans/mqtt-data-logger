@@ -14,10 +14,6 @@ from mqtt_data_logger.sensor_data_models import (
     SensorMeasurement,
 )
 
-###############################################################################
-# helper functions
-###############################################################################
-
 
 # DONE: add multiple sensor measurements at once
 def add_sensors_reading_record(

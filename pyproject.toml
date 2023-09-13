@@ -13,6 +13,7 @@ dependencies = ["sqlalchemy", "paho-mqtt"]
 
 [project.scripts]
 logged = "mqtt_data_logger.log_data:logged"
+start_session = "mqtt_data_logger.util:start_session" # paramterize to take arbitrary db fp
 
 [tool.setuptools.packages.find]
 # All the following settings are optional:
