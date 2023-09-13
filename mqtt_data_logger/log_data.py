@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 
 from sqlalchemy.sql import func
-from sensor_data_models import (
+from mqtt_data_logger.sensor_data_models import (
     Topic,
     Sensor,
     Measurement,
@@ -61,22 +61,20 @@ def add_sensors_reading_record(
 
     session.commit()
 
-    def logged(session, number_of_records=25, sensor=None, measurement=None):
-        """Get the latest sensor reading."""
-        records = session.query(SensorMeasurement)
 
-        if records is None:
-            print("No records in the database.")
-            return None
-        elif sensor is not None:
-            records = records.filter_by(sensor_id=sensor).one_or_none()
-        elif measurement is not None:
-            records = records.filter_by(measurement=measurement).one_or_none()
-        else:
-            records = records.order_by(SensorMeasurement.time.desc()) \
-                      .head(number_of_records)
-
-        for record in records:
-            print(record)
-
-        return records
+def logged(session, number_of_records=25, sensor=None, measurement=None):
+    """Get the latest sensor reading."""
+    records = session.query(SensorMeasurement)
+    if records is None:
+        print("No records in the database.")
+        return None
+    elif sensor is not None:
+        records = records.filter_by(sensor_id=sensor).one_or_none()
+    elif measurement is not None:
+        records = records.filter_by(measurement=measurement).one_or_none()
+    else:
+        records = records.order_by(SensorMeasurement.time.desc()) \
+                  .head(number_of_records)
+    for record in records:
+        print(record)
+    return records

@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 
 import json
-from mqtt_logger.log_data import add_sensors_reading_record
+from mqtt_data_logger.log_data import add_sensors_reading_record
 
 
 # Callbacks for Paho
@@ -26,6 +26,7 @@ def log_sensor_data(client, userdata, msg):
     """Provides callback for logging sensor_data."""
     global session
     session = session
+
     topic = msg.topic
     parsed_packet = json.loads(msg.payload.decode("utf-8"))
     measurements = parsed_packet["data"]

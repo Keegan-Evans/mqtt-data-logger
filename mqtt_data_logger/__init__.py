@@ -5,3 +5,7 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
+
+from mqtt_data_logger.log_data import add_sensors_reading_record, logged
+
+__all__ = ["add_sensors_reading_record", "logged"]
