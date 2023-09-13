@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mqtt-data-logger"
+version = "0.1.0"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+dependencies = ["sqlalchemy", "paho-mqtt"]
+
+
+[project.scripts]
+logged = "mqtt_data_logger.log_data:logged"
+start_session = "mqtt_data_logger.util:start_session" # paramterize to take arbitrary db fp
+
+[tool.setuptools.packages.find]
+# All the following settings are optional:
+where = ["."]                         # ["."] by default
+include = ["mqtt_data_logger*"]       # ["*"] by default
+exclude = ["mqtt_data_logger.tests*"] # empty by default
+namespaces = false                    # true by default
