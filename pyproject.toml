@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mqtt-data-logger"
+version = "0.1.0"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+dependencies = ["sqlalchemy", "paho-mqtt"]
+
+
+[project.scripts]
+logged = "mqtt_data_logger.log_data:logged"

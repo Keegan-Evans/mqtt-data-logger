@@ -9,7 +9,7 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from callbacks import on_connect, on_message, log_sensor_data
+from mqtt_data_logger.callbacks import on_connect, on_message, log_sensor_data
 
 from pathlib import Path
 import paho.mqtt.client as mqtt
