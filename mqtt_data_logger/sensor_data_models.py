@@ -164,8 +164,9 @@ class SensorMeasurement(Base):
         )
 
 
-if __name__ == "__main__":
-    with Path("/home/beta/sensor_data.db") as sqlite_filepath:
+def initialize_sensor_data_db(fp):
+    """Initialize the database."""
+    with Path(fp) as sqlite_filepath:
         engine = create_engine(f"sqlite:///{sqlite_filepath}")
 
     Base.metadata.create_all(engine)
@@ -173,3 +174,7 @@ if __name__ == "__main__":
     Session = sessionmaker(engine)
     session = Session()
     session.commit()
+
+
+if __name__ == "__main__":
+    initialize_sensor_data_db("/home/beta/sensor_data.db")
