@@ -27,3 +27,4 @@ tests = ["data/*"]
 [project.scripts]
 logged = "mqtt_data_logger.log_data:logged"
 start_session = "mqtt_data_logger.util:start_session" # paramterize to take arbitrary db fp
+initialize_database = "mqtt_data_logger.sensor_data_models:initialize_sensor_data_db"

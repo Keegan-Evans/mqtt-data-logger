@@ -28,6 +28,8 @@ from sqlalchemy.orm import (
 
 from pathlib import Path
 
+from sys import argv
+
 
 Base = declarative_base()
 
@@ -164,8 +166,10 @@ class SensorMeasurement(Base):
         )
 
 
-def initialize_sensor_data_db(fp):
+def initialize_sensor_data_db(fp="/home/beta/sensor_data.db"):
     """Initialize the database."""
+    if argv[1] is not None:
+        fp = argv[1]
     with Path(fp) as sqlite_filepath:
         engine = create_engine(f"sqlite:///{sqlite_filepath}")
 
