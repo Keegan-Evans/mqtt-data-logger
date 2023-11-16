@@ -11,8 +11,10 @@ from mqtt_data_logger.util import start_session, get_mqtt_client
 
 from pathlib import Path
 
-if __name__ == '__main__':
-    session = start_session(Path("/home/beta/sensor_data.db"))
+
+session = start_session(Path("/home/beta/sensor_data.db"))
+
+def main():
 
     client = get_mqtt_client()
 
