@@ -7,6 +7,8 @@
 # ----------------------------------------------------------------------------
 
 import json
+import retry
+from sqlite3 import OperationalError
 from mqtt_data_logger.log_data import add_sensors_reading_record
 
 
@@ -35,6 +37,20 @@ def log_sensor_data(client, userdata, msg):
     measurements = parsed_packet["data"]
     sensor = parsed_packet["sensor"]
     print(f"Topic: {msg.topic} Message: {str(msg.payload.decode())}")
-    add_sensors_reading_record(
-        session=session, measurements=measurements, sensor=sensor, topic=topic
-    )
+    try:
+        add_sensors_reading_record(
+            session=session, measurements=measurements, sensor=sensor, topic=topic
+        )
+    except OperationalError:
+        retry.retry(
+            add_sensors_reading_record,
+            fargs=(session, measurements, sensor, topic),
+            tries=3,
+            delay=0.53,
+        )
+    except Exception as e:
+        print(f"Error: {e}")
+        raise e
+    # add_sensors_reading_record(
+        # session=session, measurements=measurements, sensor=sensor, topic=topic
+    # )

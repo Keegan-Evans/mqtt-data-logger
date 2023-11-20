@@ -13,6 +13,7 @@ from mqtt_data_logger.sensor_data_models import (
     Measurement,
     SensorMeasurement,
 )
+from sqlalchemy import Column, DateTime
 
 
 # DONE: add multiple sensor measurements at once
@@ -49,7 +50,8 @@ def add_sensors_reading_record(
         measurement_record = SensorMeasurement(
             topic=[target_topic],
             sensor=[sensor_id],
-            time=time,
+            # time=time,
+            time=Column(DateTime(timezone=True), server_default=func.now())
             measurement=[target_measurement],
             value=value,
         )
