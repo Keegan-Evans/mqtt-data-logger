@@ -15,6 +15,7 @@ from sqlalchemy import (
     ForeignKey,
     Table,
     Float,
+    TIMESTAMP,
     DateTime,
     create_engine,
 )
@@ -141,7 +142,7 @@ class SensorMeasurement(Base):
         backref=backref("sensor_measurements"),
     )
 
-    time = Column(DateTime(timezone=True), server_default=func.now())
+    time = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
     measurement = relationship(
         "Measurement",
@@ -168,10 +169,13 @@ class SensorMeasurement(Base):
 
 def initialize_sensor_data_db(fp="/home/beta/sensor_data.db"):
     """Initialize the database."""
-    if argv[1] is not None:
-        fp = argv[1]
-    with Path(fp) as sqlite_filepath:
-        engine = create_engine(f"sqlite:///{sqlite_filepath}")
+    try:
+        fp = Path(argv[1])
+    except IndexError:
+        print("No filepath provided. Using default filepath.")
+
+    # with Path(fp) as sqlite_filepath:
+    engine = create_engine(f"sqlite:///{fp}")
 
     Base.metadata.create_all(engine)
 
@@ -181,4 +185,6 @@ def initialize_sensor_data_db(fp="/home/beta/sensor_data.db"):
 
 
 if __name__ == "__main__":
-    initialize_sensor_data_db("/home/beta/sensor_data.db")
+    # initialize_sensor_data_db("/home/beta/sensor_data.db")
+    from mqtt_data_logger import test_path
+    initialize_sensor_data_db(test_path)

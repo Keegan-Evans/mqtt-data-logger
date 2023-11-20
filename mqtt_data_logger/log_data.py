@@ -35,7 +35,7 @@ def add_sensors_reading_record(
         sensor_id = Sensor(sensor_id=sensor)
         session.add(sensor_id)
 
-    time = func.now()
+    # time = func.now(timezone=True)
 
     for measurement, value in measurements.items():
         target_measurement = (
@@ -51,7 +51,6 @@ def add_sensors_reading_record(
             topic=[target_topic],
             sensor=[sensor_id],
             # time=time,
-            time=Column(DateTime(timezone=True), server_default=func.now())
             measurement=[target_measurement],
             value=value,
         )
@@ -76,3 +75,9 @@ def logged(session, number_of_records=25, sensor=None, measurement=None):
     for record in records:
         print(record)
     return records
+
+# if __name__ == "__main__":
+    # __spec__ = None
+    # from mqtt_data_logger.util import start_session, test_path
+    # session = start_session(test_path)
+    # add_sensors_reading_record(session=session, measurements={"temp": 25.0, "humidity": 78.3})
