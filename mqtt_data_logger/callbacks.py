@@ -31,12 +31,8 @@ def log_sensor_data(client, userdata, msg):
     if "session" not in globals():
         from mqtt_data_logger.util import start_session
         session = start_session()
-    # if "session" in userdata:
-        # session = userdata["session"]
-#  
-    # session = client._userdata['session']
+    
     topic = msg.topic
-    # print(topic)
     parsed_packet = json.loads(msg.payload.decode("utf-8"))
     measurements = parsed_packet["data"]
     if "wind_speed" in measurements:
@@ -44,6 +40,7 @@ def log_sensor_data(client, userdata, msg):
             measurements["wind_speed"]
             )
         measurements.pop("wind_speed")
+
     if "wind_direction" in measurements:
         measurements["cardinal_direction"] = lookup_cardinal(
             measurements["wind_direction"]
