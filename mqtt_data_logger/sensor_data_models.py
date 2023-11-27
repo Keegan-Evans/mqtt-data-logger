@@ -159,7 +159,6 @@ class SensorMeasurement(Base):
     )
 
     value = Column(Float)
-    value_2 = Column(Float)
     str_value = Column(String)
 
     def __repr__(self):
@@ -173,7 +172,6 @@ class SensorMeasurement(Base):
                 self.time.strftime("%Y-%m-%d %H:%M:%S"),
                 self.measurement[0].measurement,
                 self.value,
-                self.value2,
                 self.str_value,
             )
         )
