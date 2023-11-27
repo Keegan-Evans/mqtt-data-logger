@@ -10,6 +10,7 @@ import json
 import retry
 from sqlite3 import OperationalError
 from mqtt_data_logger.log_data import add_sensors_reading_record
+from mqtt_data_logger.munge_wind import lookup_beaufort, lookup_cardinal
 
 
 # Callbacks for Paho
@@ -35,11 +36,23 @@ def log_sensor_data(client, userdata, msg):
     topic = msg.topic
     parsed_packet = json.loads(msg.payload.decode("utf-8"))
     measurements = parsed_packet["data"]
+    if "wind_speed" in measurements:
+        measurements["binned_wind_speed"] = lookup_beaufort(
+            measurements["wind_speed"]
+            )
+    if "wind_direction" in measurements:
+        measurements["cardinal_direction"] = lookup_cardinal(
+            measurements["wind_direction"]
+            )
+
     sensor = parsed_packet["sensor"]
     print(f"Topic: {msg.topic} Message: {str(msg.payload.decode())}")
     try:
         add_sensors_reading_record(
-            session=session, measurements=measurements, sensor=sensor, topic=topic
+            session=session,
+            measurements=measurements,
+            sensor=sensor,
+            topic=topic
         )
     except OperationalError:
         retry.retry(

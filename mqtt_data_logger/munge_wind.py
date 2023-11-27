@@ -65,3 +65,4 @@ def lookup_beaufort(speed):
 
     for beaufort_breaks in beaufort_map.keys():
         if beaufort_breaks[0] <= speed < beaufort_breaks[1]:
+            return beaufort_map[beaufort_breaks]
