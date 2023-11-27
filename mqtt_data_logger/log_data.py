@@ -6,14 +6,12 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-from sqlalchemy.sql import func
 from mqtt_data_logger.sensor_data_models import (
     Topic,
     Sensor,
     Measurement,
     SensorMeasurement,
 )
-from sqlalchemy import Column, DateTime
 
 
 # DONE: add multiple sensor measurements at once
@@ -38,6 +36,12 @@ def add_sensors_reading_record(
     # time = func.now(timezone=True)
 
     for measurement, value in measurements.items():
+        if isinstance(value, list) | isinstance(value, tuple):
+            str_value = value[0]
+            value = value[1]
+        else:
+            str_value = ""
+
         target_measurement = (
             session.query(Measurement)
             .filter_by(measurement=measurement)
@@ -50,9 +54,9 @@ def add_sensors_reading_record(
         measurement_record = SensorMeasurement(
             topic=[target_topic],
             sensor=[sensor_id],
-            # time=time,
             measurement=[target_measurement],
             value=value,
+            str_value=str_value,
         )
         session.add(measurement_record)
 

@@ -14,7 +14,5 @@ from pathlib import Path
 
 def main():
     session = start_session(Path("/home/beta/sensor_data.db"))
-
     client = get_mqtt_client()
-
     client.loop_forever()
