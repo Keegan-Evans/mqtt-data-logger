@@ -36,7 +36,7 @@ def add_sensors_reading_record(
     # time = func.now(timezone=True)
 
     for measurement, value in measurements.items():
-        if len(measurement) == 2:
+        if len(value) == 2:
             str_value = value[0]
             value = value[1]
         else:
