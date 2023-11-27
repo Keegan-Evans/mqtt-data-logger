@@ -39,6 +39,7 @@ def log_sensor_data(client, userdata, msg):
     # print(topic)
     parsed_packet = json.loads(msg.payload.decode("utf-8"))
     measurements = parsed_packet["data"]
+    raise Exception("{}".format(measurements))
     if "wind_speed" in measurements:
         measurements["binned_wind_speed"] = lookup_beaufort(
             measurements["wind_speed"]
