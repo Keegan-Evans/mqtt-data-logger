@@ -92,9 +92,9 @@ class TestSensorData(unittest.TestCase):
         new_sensor = Sensor()
         new_sensor.add(self.session, sensor)
 
-        added_sensor = self.session.query(Sensor).filter_by(sensor=sensor).first()
+        added_sensor = self.session.query(Sensor).filter_by(sensor_id=sensor).first()
         self.assertIsNotNone(added_sensor)
-        self.assertEqual(added_sensor.sensor, sensor)
+        self.assertEqual(added_sensor.sensor_id, sensor)
 
     def test_add_existing_sensor(self):
         ic()
@@ -106,7 +106,7 @@ class TestSensorData(unittest.TestCase):
         # Try to add the same sensor again
         new_sensor.add(self.session, sensor)
 
-        sensors_count = ic(self.session.query(Sensor).filter_by(sensor=sensor).count())
+        sensors_count = ic(self.session.query(Sensor).filter_by(sensor_id=sensor).count())
         self.assertEqual(sensors_count, 1)  # Should still be only one sensor with this ID
 
 
@@ -126,7 +126,7 @@ class TestSensorData(unittest.TestCase):
         ic()
         """ Test adding an existing measurement. """
         measurement = "measurement123"
-        existing_measurement = Measurement().add(self.session, measurement)
+        Measurement().add(self.session, measurement)
         new_measurement = Measurement()
         new_measurement.add(self.session, measurement)
 
@@ -139,7 +139,7 @@ class TestSensorData(unittest.TestCase):
     def test_sensor_measurement_repr(self):
         """ Test the string representation of SensorMeasurement. """
         topic = Topic(topic="Environment")
-        sensor = Sensor(sensor="EnvSensor01")
+        sensor = Sensor(sensor_id="EnvSensor01")
         measurement = Measurement(measurement="Temperature")
         sensor_measurement = SensorMeasurement(
             topic=[topic],

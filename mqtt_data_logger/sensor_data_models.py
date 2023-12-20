@@ -130,7 +130,7 @@ class Sensor(Base):
 
     Attributes:
     - sensor_num_id (int): The primary key of the sensor.
-    - sensor (str): The unique identifier for the sensor.
+    - sensor_id (str): The unique identifier for the sensor.
 
     Methods:
     - add(session, sensor_to_add): Adds a new sensor to the database.
@@ -138,7 +138,7 @@ class Sensor(Base):
 
     __tablename__ = "sensors"
     sensor_num_id = Column(Integer, primary_key=True)
-    sensor = Column(String, unique=True)
+    sensor_id = Column(String, unique=True)
 
     def add(self, session, sensor_to_add):
         """
@@ -154,12 +154,12 @@ class Sensor(Base):
         None
         """
         ic(f"Adding Sensor: {sensor_to_add}")
-        sensor = (
-            session.query(Sensor).filter_by(sensor=sensor_to_add).one_or_none()
+        existing_sensor = (
+            session.query(Sensor).filter_by(sensor_id=sensor_to_add).one_or_none()
         )
-        if sensor is not None:
+        if existing_sensor is not None:
             return None
-        session.add(Sensor(sensor=sensor_to_add))
+        session.add(Sensor(sensor_id=sensor_to_add))
         session.commit()
 
 
@@ -264,7 +264,7 @@ class SensorMeasurement(Base):
             "measurement_kind: {}, "
             "measurement_value: {}".format(
                 self.topic[0].topic,
-                self.sensor[0].sensor,
+                self.sensor[0].sensor_id,
                 self.time.strftime("%Y-%m-%d %H:%M:%S"),
                 self.measurement[0].measurement,
                 self.value,
