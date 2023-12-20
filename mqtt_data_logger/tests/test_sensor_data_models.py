@@ -1,6 +1,6 @@
 # import pytest
 from importlib import metadata
-import inspect
+# import inspect
 from tkinter import W
 import unittest
 from icecream import ic
@@ -13,20 +13,14 @@ from mqtt_data_logger.sensor_data_models import (
 import os
 
 # Use an in-memory SQLite database for testing
-TEST_DATABASE_FP = ic(os.path.join("mqtt_data_logger", "tests", "data", "test_data.db"))
-TEST_DATABASE_URL = f"sqlite:///{TEST_DATABASE_FP}"
-# TEST_DATABASE_URL = "sqlite:///:memory:"
-
-
-# Use an in-memory SQLite database for testing
-# TEST_DATABASE_URL = "sqlite:///:memory:"
+TEST_DATABASE_URL = "sqlite:///:memory:"
 
 class TestSensorData(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         # Create an SQLite in-memory database and apply the schema
-        initialize_sensor_data_db(TEST_DATABASE_FP)
+        # ic(initialize_sensor_data_db(TEST_DATABASE_FP))
         cls.engine = create_engine(TEST_DATABASE_URL)
         Base.metadata.create_all(cls.engine)
 
@@ -81,7 +75,7 @@ class TestSensorData(unittest.TestCase):
     def test_add_existing_topic(self):
         """ Test adding an existing topic. """
         topic_name = "Test Topic"
-        new_topic = Topic(topic=topic_name)
+        new_topic = Topic()
         new_topic.add(self.session, topic_name)
         
         # Try to add the same topic again
@@ -90,8 +84,79 @@ class TestSensorData(unittest.TestCase):
         topics_count = self.session.query(Topic).filter_by(topic=topic_name).count()
         self.assertEqual(topics_count, 1)  # Should still be only one topic with this name
 
+    # sensor table
+    def test_add_new_sensor(self):
+        """ Test adding a new sensor. """
+        ic()
+        sensor = "Sensor123"
+        new_sensor = Sensor()
+        new_sensor.add(self.session, sensor)
 
-        # You can add more assertions for other tables if needed
+        added_sensor = self.session.query(Sensor).filter_by(sensor=sensor).first()
+        self.assertIsNotNone(added_sensor)
+        self.assertEqual(added_sensor.sensor, sensor)
+
+    def test_add_existing_sensor(self):
+        ic()
+        """ Test adding an existing sensor. """
+        sensor = "Sensor123"
+        new_sensor = Sensor()
+        new_sensor.add(self.session, sensor)
+
+        # Try to add the same sensor again
+        new_sensor.add(self.session, sensor)
+
+        sensors_count = ic(self.session.query(Sensor).filter_by(sensor=sensor).count())
+        self.assertEqual(sensors_count, 1)  # Should still be only one sensor with this ID
+
+
+    # measurement table
+    def test_add_new_measurement(self):
+        """ Test adding a new measurement. """
+        ic()
+        measurement = "measurement123"
+        new_measurement = Measurement()
+        new_measurement.add(self.session, measurement)
+
+        added_measurement = self.session.query(Measurement).filter_by(measurement=measurement).first()
+        self.assertIsNotNone(added_measurement)
+        self.assertEqual(added_measurement.measurement, measurement)
+
+    def test_add_existing_measurement(self):
+        ic()
+        """ Test adding an existing measurement. """
+        measurement = "measurement123"
+        existing_measurement = Measurement().add(self.session, measurement)
+        new_measurement = Measurement()
+        new_measurement.add(self.session, measurement)
+
+        # Try to add the same measurement again
+        new_measurement.add(self.session, measurement)
+
+        measurements_count = ic(self.session.query(Measurement).filter_by(measurement=measurement).count())
+        self.assertEqual(measurements_count, 1)  # Should still be only one measurement with this ID
+
+    def test_sensor_measurement_repr(self):
+        """ Test the string representation of SensorMeasurement. """
+        topic = Topic(topic="Environment")
+        sensor = Sensor(sensor="EnvSensor01")
+        measurement = Measurement(measurement="Temperature")
+        sensor_measurement = SensorMeasurement(
+            topic=[topic],
+            sensor=[sensor],
+            measurement=[measurement],
+            value=23.5,
+            value_2=24.0,
+            str_value="23.5°C"
+        )
+        self.session.add_all([topic, sensor, measurement, sensor_measurement])
+        self.session.commit()
+
+        retrieved_measurement = self.session.query(SensorMeasurement).first()
+        expected_repr = "topic: Environment, sensor: EnvSensor01, time: {}, measurement_kind: Temperature, measurement_value: 23.5".format(retrieved_measurement.time.strftime("%Y-%m-%d %H:%M:%S"))
+        self.assertEqual(retrieved_measurement.__repr__(), expected_repr)
+
+
 
 if __name__ == "__main__":
     unittest.main()

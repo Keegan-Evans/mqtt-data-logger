@@ -30,6 +30,7 @@ from sqlalchemy.orm import (
 from pathlib import Path
 
 from sys import argv
+from icecream import ic
 
 
 Base = declarative_base()
@@ -111,6 +112,7 @@ class Topic(Base):
         Returns:
         None
         """
+        ic(f"Adding Topic: {topic_to_add}")
         topic = (
             session.query(Topic).filter_by(topic=topic_to_add).one_or_none()
         )
@@ -121,40 +123,102 @@ class Topic(Base):
 
 
 class Sensor(Base):
-    """Create sensors table data model."""
+    """
+    Holds all of the sensors in the 'sensors' table of the database.
+
+    This class provides an ORM mapping for the 'sensors' table, with methods to add new sensors to the database.
+
+    Attributes:
+    - sensor_num_id (int): The primary key of the sensor.
+    - sensor (str): The unique identifier for the sensor.
+
+    Methods:
+    - add(session, sensor_to_add): Adds a new sensor to the database.
+    """
 
     __tablename__ = "sensors"
     sensor_num_id = Column(Integer, primary_key=True)
-    sensor_id = Column(String, unique=True)
+    sensor = Column(String, unique=True)
 
     def add(self, session, sensor_to_add):
-        """Add a new sensor to the database."""
+        """
+        Adds a new sensor to the database if it doesn't already exist.
+
+        This method checks if the given sensor already exists in the database. If not, it adds the new sensor.
+
+        Parameters:
+        - session (Session): The SQLAlchemy session for database operations.
+        - sensor_to_add (str): The unique identifier of the sensor to be added.
+
+        Returns:
+        None
+        """
+        ic(f"Adding Sensor: {sensor_to_add}")
         sensor = (
             session.query(Sensor).filter_by(sensor=sensor_to_add).one_or_none()
         )
-        if sensor is None:
-            return
+        if sensor is not None:
+            return None
         session.add(Sensor(sensor=sensor_to_add))
         session.commit()
 
 
 class Measurement(Base):
+    """
+    Represents a measurement type in the 'measurements' table of the database.
+
+    This class provides an ORM mapping for the 'measurements' table. Each instance corresponds to a row in the table representing a type of measurement.
+
+    Attributes:
+    - measurement_num_id (int): The primary key of the measurement.
+    - measurement (str): The name or description of the measurement kind.
+    """
     """ "Create measurements table data model."""
 
     __tablename__ = "measurements"
     measurement_num_id = Column(Integer, primary_key=True)
     measurement = Column(String, unique=True)
 
+    def add(self, session, measurement_to_add):
+        """
+        Adds a new measurement to the database if it doesn't already exist.
+
+        This method checks if the given sensor already exists in the database. If not, it adds the new sensor.
+
+        Parameters:
+        - session (Session): The SQLAlchemy session for database operations.
+        - sensor_to_add (str): The unique identifier of the sensor to be added.
+
+        Returns:
+        None
+        """
+        ic(f"Adding Sensor: {measurement_to_add}")
+        measurement = (
+            session.query(Measurement).filter_by(measurement=measurement_to_add).one_or_none()
+        )
+        if measurement is not None:
+            return None
+        session.add(Measurement(measurement=measurement_to_add))
+        session.commit()
 
 class SensorMeasurement(Base):
-    """Create sensor measurements table data model.
-    topic: str topic of the sensor measurement
-    sensor: str sensor id of the sensor used to record the measurement
-    time: <sqlalchem.TIMESTAMP> The time at which the measurement was logged.
-    measurement_kind: <str> The kind of sensor data that was recorded.
-    value: <float> The value of the measurement.
-    value_2: <float> A second measurement value
-    str_value: <str> The value of the measurement as a string.
+    """
+    Represents a sensor measurement reading stored in the 'sensor_measurements' table of the database.
+
+    This class provides an ORM mapping for the 'sensor_measurements' table. It includes relationships to the 'Topic', 'Sensor', and 'Measurement' classes and records various details about each sensor measurement.
+
+    Attributes:
+    - sensor_measurement_num_id (int): The primary key of the sensor measurement.
+    - topic (relationship): The relationship to the 'Topic' class.
+    - sensor (relationship): The relationship to the 'Sensor' class.
+    - time (TIMESTAMP): The time at which the measurement was recorded.
+    - measurement (relationship): The relationship to the 'Measurement' class.
+    - value (float): The numerical value of the measurement.
+    - value_2 (float): An additional numerical value for the measurement.
+    - str_value (str): The string representation of the measurement value.
+
+    Methods:
+    - __repr__(): Returns a string representation of the sensor measurement instance.
     """
 
     __tablename__ = "sensor_measurements"
@@ -185,13 +249,22 @@ class SensorMeasurement(Base):
     str_value = Column(String)
 
     def __repr__(self):
+        """
+        Returns a string representation of the SensorMeasurement instance.
+
+        This method provides a convenient way to view the details of a sensor measurement, including its topic, sensor ID, time of measurement, measurement kind, and the values recorded.
+
+        Returns:
+        str: A string representation of the sensor measurement instance.
+        """
+
         return (
             "topic: {}, sensor: {}, "
             "time: {}, "
             "measurement_kind: {}, "
             "measurement_value: {}".format(
                 self.topic[0].topic,
-                self.sensor[0].sensor_id,
+                self.sensor[0].sensor,
                 self.time.strftime("%Y-%m-%d %H:%M:%S"),
                 self.measurement[0].measurement,
                 self.value,
@@ -203,13 +276,14 @@ class SensorMeasurement(Base):
 
 def initialize_sensor_data_db(fp="/home/beta/sensor_data.db"):
     """Initialize the database."""
+    ic
     try:
         fp = Path(argv[1])
     except IndexError:
         print("No filepath provided. Using default filepath.")
 
     # with Path(fp) as sqlite_filepath:
-    engine = create_engine(f"sqlite:///{fp}")
+    engine = ic(create_engine(f"sqlite:///{fp}"))
 
     Base.metadata.create_all(engine)
 
