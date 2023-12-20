@@ -80,19 +80,41 @@ measurement_kind_sensor_measurement = Table(
 ###############################################################################
 # ORM data models
 ###############################################################################
-class Topic(Base):
-    """Create a topic table data model."""
 
+class Topic(Base):
+    """
+    Represents a topic in the 'topics' table of the database.
+
+    This class provides an ORM mapping for the 'topics' table, where each instance corresponds to a row in the table. It includes methods for adding new topics to the database.
+
+    Attributes:
+    - topic_num_id (int): The primary key of the topic.
+    - topic (str): The name or title of the topic.
+
+    Methods:
+    - add(session, topic_to_add): Adds a new topic to the database.
+    """
     __tablename__ = "topics"
     topic_num_id = Column(Integer, primary_key=True)
     topic = Column(String, unique=True)
 
     def add(self, session, topic_to_add):
-        """Add a new topic to the database."""
+        """
+        Adds a new topic to the database if it doesn't already exist.
+
+        This method checks if the given topic already exists in the database. If it doesn't, the method adds it.
+
+        Parameters:
+        - session (Session): The SQLAlchemy session for database operations.
+        - topic_to_add (str): The name of the topic to be added.
+
+        Returns:
+        None
+        """
         topic = (
             session.query(Topic).filter_by(topic=topic_to_add).one_or_none()
         )
-        if topic is None:
+        if topic is not None:
             return
         session.add(Topic(topic=topic_to_add))
         session.commit()
