@@ -20,6 +20,7 @@ master_map = {
     }
 
 
+# TODO: fail gracefully on bad wind angle
 def lookup_cardinal(angle):
     if not 0 <= angle < 360:
         raise ValueError(
